@@ -18,9 +18,7 @@ jobs:
           name: Download Veracode Wrapper
           command: wget -q -O veracode-wrapper.jar https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar
           name: Run Veracode
-          command: java -jar veracode-wrapper.jar -vid ${TEAM_ANALYSISCENTER_ID} -vkey ${TEAM_ANALYSISCENTER_KEY}
-          -action UploadAndScan -appname "Verademo_circleci" -createprofile true -autoscan true -sandboxname "gitlab-development" -createsandbox true
-          -filepath ./target/verademo.war -version "Job ${CI_JOB_ID} in pipeline ${CI_PIPELINE_ID}"
+          command: java -jar veracode-wrapper.jar -vid ${TEAM_ANALYSISCENTER_ID} -vkey ${TEAM_ANALYSISCENTER_KEY} -action UploadAndScan -appname "Verademo_circleci" -createprofile true -autoscan true -sandboxname "gitlab-development" -createsandbox true -filepath ./target/verademo.war -version "Job ${CI_JOB_ID} in pipeline ${CI_PIPELINE_ID}"
 
 workflows:
   version: 2.1
