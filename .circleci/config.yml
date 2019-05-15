@@ -1,15 +1,32 @@
 # Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
 version: 2.1
 
-# Use a package of configuration called an orb, see https://circleci.com/docs/2.0/orb-intro/
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.3.1
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      # The primary container is an instance of the first image listed. The job's commands run in this container.
+      - image: signiant/docker-jenkins-centos7-java8
+    working_directory: ~/target
+    steps:
+      - checkout
+      - run:
+          name: Install Maven
+          command: 'yum -y install maven'
+		  name: Run Maven
+		  command: 'mvn compile package'
+		  name: Download Veracode Wrapper
+		  command: wget -q -O veracode-wrapper.jar https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar
+		  name: Run Veracode
+		  command: java -jar veracode-wrapper.jar -vid ${TEAM_ANALYSISCENTER_ID} -vkey ${TEAM_ANALYSISCENTER_KEY}
+          -action UploadAndScan -appname "Verademo_circleci" -createprofile true -autoscan true -sandboxname "gitlab-development" -createsandbox true
+          -filepath ./target/verademo.war -version "Job ${CI_JOB_ID} in pipeline ${CI_PIPELINE_ID}"
 
-# Orchestrate or schedule a set of jobs, see https://circleci.com/docs/2.0/workflows/
 workflows:
-  # Name the workflow "Welcome"
-  Welcome:
-    # Run the welcome/run job in its own container
+  version: 2.1
+  build_and_test:
     jobs:
-      - welcome/run
+      - build
+          filters:
+            branches:
+              only: master
