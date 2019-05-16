@@ -92,8 +92,8 @@ jobs:
           name: Run Greenlight
           command: |
               java -jar gl-scanner-java.jar
-                  --api_id $TEAM_ANALYSISCENTER_ID
-                  --api_secret_key $TEAM_ANALYSISCENTER_KEY
+                  -i $TEAM_ANALYSISCENTER_ID
+                  -k $TEAM_ANALYSISCENTER_KEY
                   --source_dir "./"
                   --build_dir "./target"
                   --project_name "Verademo_circleci"
