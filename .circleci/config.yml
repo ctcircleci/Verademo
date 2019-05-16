@@ -30,7 +30,7 @@ jobs:
       
     #working_directory: ~/target
     
-    #steps:
+    steps:
       # get the files from the previous job
       - attach_workspace:
           at: ./
