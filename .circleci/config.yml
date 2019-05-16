@@ -22,6 +22,7 @@ jobs:
           root: ./
           paths:
             - target
+            - ./
   # job to upload to Veracode for scanning
   veracode_scan:
 
@@ -67,7 +68,7 @@ jobs:
     steps:
       # get the files from the previous job
       - attach_workspace:
-          at: .
+          at: ./
       # Install Maven
       - run:
           name: Install Maven
