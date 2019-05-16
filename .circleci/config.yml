@@ -17,23 +17,23 @@ jobs:
           name: Run Maven
           command: 'mvn compile package'
       # keep the files around for the scan job
-      #- persist_to_workspace:
-      #    root: ..
-      #    paths:
-      #      - target
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - target
   # job to upload to Veracode for scanning
-  #veracode_scan:
+  veracode_scan:
 
     # use a java-based image to run the Veracode API wrapper
-    #docker:
-    #  - image: signiant/docker-jenkins-centos7-java8
+    docker:
+      - image: signiant/docker-jenkins-centos7-java8
       
     #working_directory: ~/target
     
     #steps:
       # get the files from the previous job
-      #- attach_workspace:
-      #    at: .
+      - attach_workspace:
+          at: ./
           
       # grab the Veracode agent
       - run:
@@ -61,6 +61,6 @@ workflows:
   build_and_scan:
     jobs:
       - build
-      #- veracode_scan:
-      #    requires:
-      #      - build
+      - veracode_scan:
+          requires:
+            - build
