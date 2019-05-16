@@ -90,17 +90,7 @@ jobs:
               unzip gl-scanner-java-LATEST.zip gl-scanner-java.jar
       - run: 
           name: Run Greenlight
-          command: java -jar gl-scanner-java.jar -i "$TEAM_ANALYSISCENTER_ID" -k "$TEAM_ANALYSISCENTER_KEY" |
-                  --source_dir "./" |
-                  --build_dir "./target" |
-                  --project_name "Verademo_circleci" |
-                  --project_url $SRCCLR_SCM_URI |
-                  --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM |
-                  --source_dir "./" |
-                  --build_dir "./target" |
-                  --project_name "Verademo_circleci" |
-                  --project_url $SRCCLR_SCM_URI |
-                  --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM
+          command: java -jar gl-scanner-java.jar -i "$TEAM_ANALYSISCENTER_ID" -k "$TEAM_ANALYSISCENTER_KEY" --source_dir "./" --build_dir "./target" --project_name "Verademo_circleci" --project_url $SRCCLR_SCM_URI --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM --source_dir "./" --build_dir "./target" --project_name "Verademo_circleci" --project_url $SRCCLR_SCM_URI --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM
 # serial jobs - need to run 'build' before 'scan'
 workflows:
   version: 2.1
