@@ -6,10 +6,11 @@ jobs:
     docker:
       # specify the version you desire here
       # The primary container is an instance of the first image listed. The job's commands run in this container.
-      - image: signiant/docker-jenkins-centos7-java8
+      - image: signiant/docker-jenkins-centos7-java8:latest
     working_directory: ~/target
     steps:
       - checkout
+      # Install and run Maven
       - run:
           name: Install Maven
           command: 'yum -y install maven'
@@ -26,7 +27,7 @@ jobs:
 
     # use a java-based image to run the Veracode API wrapper
     docker:
-      - image: signiant/docker-jenkins-centos7-java8
+      - image: signiant/docker-jenkins-centos7-java8:latest
       
     #working_directory: ~/target
     
@@ -59,7 +60,7 @@ jobs:
   srcclr_scan:
     docker:
       # specify the version you desire here
-      - image: signiant/docker-jenkins-centos7-java8
+      - image: signiant/docker-jenkins-centos7-java8:latest
 
     #working_directory: ~/repo
 
@@ -67,6 +68,10 @@ jobs:
       # get the files from the previous job
       - attach_workspace:
           at: .
+      # Install Maven
+      - run:
+          name: Install Maven
+          command: 'yum -y install maven'      
 
       # download and run SourceClear scanner
       - run:
