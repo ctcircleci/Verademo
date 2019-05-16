@@ -54,6 +54,26 @@ jobs:
               -createprofile true 
               -version CircleCI-$CIRCLE_BUILD_NUM 
               -filepath ./target/verademo.war
+ 
+ # job to upload to Veracode for scanning
+  srcclr_scan:
+    docker:
+      # specify the version you desire here
+      - image: signiant/docker-jenkins-centos7-java8
+
+    #working_directory: ~/repo
+
+    steps:
+      # get the files from the previous job
+      - attach_workspace:
+          at: .
+
+      # download and run SourceClear scanner
+      - run:
+          name: "SourceClear scan"
+          command: |
+            cd nodegoat
+            curl -sSL https://download.sourceclear.com/ci.sh | bash
 
 # serial jobs - need to run 'build' before 'scan'
 workflows:
@@ -62,5 +82,8 @@ workflows:
     jobs:
       - build
       - veracode_scan:
+          requires:
+            - build
+      - srcclr_scan:
           requires:
             - build
