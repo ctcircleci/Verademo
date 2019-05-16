@@ -72,7 +72,7 @@ jobs:
       - run:
           name: "SourceClear scan"
           command: |
-            cd nodegoat
+            #cd nodegoat
             curl -sSL https://download.sourceclear.com/ci.sh | bash
 
 # serial jobs - need to run 'build' before 'scan'
