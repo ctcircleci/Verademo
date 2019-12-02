@@ -1,0 +1,105 @@
+# Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      # The primary container is an instance of the first image listed. The job's commands run in this container.
+      - image: signiant/docker-jenkins-centos7-java8:latest
+    working_directory: ~/target
+    steps:
+      - checkout
+      # Install and run Maven
+      - run:
+          name: Install Maven
+          command: 'yum -y install maven'
+      - run:
+          name: Run Maven
+          command: 'mvn compile package'
+      # keep the files around for the scan job
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - target
+            - ./
+  # job to upload to Veracode for scanning
+  veracode_scan:
+
+    # use a java-based image to run the Veracode API wrapper
+    docker:
+      - image: signiant/docker-jenkins-centos7-java8:latest
+      
+    #working_directory: ~/target
+    
+    steps:
+      # get the files from the previous job
+      - attach_workspace:
+          at: ./
+          
+      # grab the Veracode agent
+      - run:
+          name: "Get the Veracode agent"
+          command: |
+            wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$VERACODE_WRAPPER_VERSION/vosp-api-wrappers-java-$VERACODE_WRAPPER_VERSION.jar -O veracode-wrapper.jar
+            #chmod 755 veracode-wrapper.jar
+
+      # upload for scanning
+      # env vars are used to pass login creds and set the scan name
+      - run:
+          name: "Upload to Veracode"
+          command: java -jar veracode-wrapper.jar 
+              -vid $TEAM_ANALYSISCENTER_ID
+              -vkey $TEAM_ANALYSISCENTER_KEY
+              -action uploadandscan 
+              -appname "Verademo_circleci"
+              -createprofile true 
+              -version CircleCI-$CIRCLE_BUILD_NUM 
+              -filepath ./target/verademo.war
+ 
+ # job to upload to Veracode for Agent Based SCA scanning
+  srcclr_scan:
+    docker:
+      # specify the version you desire here
+      - image: signiant/docker-jenkins-centos7-java8:latest
+
+    #working_directory: ~/repo
+
+    steps:
+      # get the files from the previous job
+      - attach_workspace:
+          at: ./
+      # Install Maven
+      - run:
+          name: Install Maven
+          command: 'yum -y install maven'      
+
+      # download and run SourceClear scanner
+      - run:
+          name: "SourceClear scan"
+          command: |
+            curl -sSL https://download.sourceclear.com/ci.sh | bash
+            
+      - run: 
+          name: Download Greenlight
+          command: |
+              curl -O https://downloads.veracode.com/securityscan/gl-scanner-java-LATEST.zip
+      - run: 
+          name: Unzip Greenlight
+          command: |
+              unzip gl-scanner-java-LATEST.zip gl-scanner-java.jar
+      - run: 
+          name: Run Greenlight
+          command: java -jar gl-scanner-java.jar -i "$TEAM_ANALYSISCENTER_ID" -k "$TEAM_ANALYSISCENTER_KEY" --source_dir "./" --build_dir "./target" --project_name "Verademo_circleci" --project_url $SRCCLR_SCM_URI --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM --source_dir "./" --build_dir "./target" --project_name "Verademo_circleci" --project_url $SRCCLR_SCM_URI --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM
+# serial jobs - need to run 'build' before 'scan'
+workflows:
+  version: 2.1
+  build_and_scan:
+    jobs:
+      - build
+      - veracode_scan:
+          requires:
+            - build
+      - srcclr_scan:
+          requires:
+            - build
