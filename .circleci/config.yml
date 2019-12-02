@@ -58,7 +58,7 @@ jobs:
               -filepath ./target/verademo.war
  
  # job to upload to Veracode for Agent Based SCA scanning
-  srcclr_scan:
+  abs_scan:
     docker:
       # specify the version you desire here
       - image: signiant/docker-jenkins-centos7-java8:latest
@@ -76,21 +76,10 @@ jobs:
 
       # download and run SourceClear scanner
       - run:
-          name: "SourceClear scan"
+          name: "Veracode Agent Based Scan"
           command: |
             curl -sSL https://download.sourceclear.com/ci.sh | bash
             
-      - run: 
-          name: Download Greenlight
-          command: |
-              curl -O https://downloads.veracode.com/securityscan/gl-scanner-java-LATEST.zip
-      - run: 
-          name: Unzip Greenlight
-          command: |
-              unzip gl-scanner-java-LATEST.zip gl-scanner-java.jar
-      - run: 
-          name: Run Greenlight
-          command: java -jar gl-scanner-java.jar -i "$TEAM_ANALYSISCENTER_ID" -k "$TEAM_ANALYSISCENTER_KEY" --source_dir "./" --build_dir "./target" --project_name "Verademo_circleci" --project_url $SRCCLR_SCM_URI --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM --source_dir "./" --build_dir "./target" --project_name "Verademo_circleci" --project_url $SRCCLR_SCM_URI --previous_job_name $CIRCLE_PREVIOUS_BUILD_NUM
 # serial jobs - need to run 'build' before 'scan'
 workflows:
   version: 2.1
@@ -100,6 +89,6 @@ workflows:
       - veracode_scan:
           requires:
             - build
-      - srcclr_scan:
+      - abs_scan:
           requires:
             - build
