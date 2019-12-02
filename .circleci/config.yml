@@ -57,7 +57,7 @@ jobs:
               -version CircleCI-$CIRCLE_BUILD_NUM 
               -filepath ./target/verademo.war
  
- # job to upload to Veracode for scanning
+ # job to upload to Veracode for Agent Based SCA scanning
   srcclr_scan:
     docker:
       # specify the version you desire here
