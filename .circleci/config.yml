@@ -4,7 +4,6 @@ version: 2.1
 jobs:
   build:
     docker:
-      # specify the version you desire here
       # The primary container is an instance of the first image listed. The job's commands run in this container.
       - image: signiant/docker-jenkins-centos7-java8:latest
     working_directory: ~/target
