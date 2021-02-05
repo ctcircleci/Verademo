@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       # The primary container is an instance of the first image listed. The job's commands run in this container.
-      - image: smaven:3.6.3-openjdk-8
+      - image: maven:3.6.3-openjdk-8
     working_directory: ~/target
     steps:
       - checkout
