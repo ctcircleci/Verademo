@@ -5,7 +5,7 @@ jobs:
   build:
     docker:
       # The primary container is an instance of the first image listed. The job's commands run in this container.
-      - image: signiant/docker-jenkins-centos7-java8:latest
+      - image: smaven:3.6.3-openjdk-8
     working_directory: ~/target
     steps:
       - checkout
@@ -100,7 +100,7 @@ jobs:
       - run:
          name: "Run Veracode Pipeline Scan  and create a baseline"
          command: |
-           - java -jar $(System.DefaultWorkingDirectory)/pipeline/pipeline-scan.jar -vid $TEAM_ANALYSISCENTER_ID -vkey TEAM_ANALYSISCENTER_KEY -f /home/vsts/work/1/s/target/verademo.war --json_output_file="baseline.json" || true
+           - java -jar pipeline-scan.jar -vid $TEAM_ANALYSISCENTER_ID -vkey TEAM_ANALYSISCENTER_KEY -f ./target/verademo.war --json_output_file="baseline.json" || true
 
 # serial jobs - need to run 'build' before 'scan'
 workflows:
