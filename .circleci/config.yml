@@ -10,9 +10,9 @@ jobs:
     steps:
       - checkout
       # Install and run Maven
-      - run:
-          name: Install Maven
-          command: 'yum -y install maven'
+      #- run:
+      #    name: Install Maven
+      #    command: 'yum -y install maven'
       - run:
           name: Run Maven
           command: 'mvn compile package'
