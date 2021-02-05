@@ -78,13 +78,39 @@ jobs:
           name: "Veracode Agent Based Scan"
           command: |
             curl -sSL https://download.sourceclear.com/ci.sh | bash
-            
+
+ # job to perform a Veracode Pipeline Scan
+  pipeline_scan:
+    docker: 
+      - image: signiant/docker-jenkins-centos7-java8:latest
+    
+    steps:
+      # get the files from the previous job
+      - attach_workspace:
+          at: ./
+      # Downlowad the scanner
+      - run:
+         name: "Download Veracode Pipeline Scan"
+         command: |
+           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      - run:
+         name: "Unzip Veracode Pipeline Scan"
+         command: |
+           - unzip pipeline-scan-LATEST.zip
+      - run:
+         name: "Run Veracode Pipeline Scan  and create a baseline"
+         command: |
+           - java -jar $(System.DefaultWorkingDirectory)/pipeline/pipeline-scan.jar -vid $TEAM_ANALYSISCENTER_ID -vkey TEAM_ANALYSISCENTER_KEY -f /home/vsts/work/1/s/target/verademo.war --json_output_file="baseline.json" || true
+
 # serial jobs - need to run 'build' before 'scan'
 workflows:
   version: 2.1
   build_and_scan:
     jobs:
       - build
+      - pipeline_scan:
+          requires:
+            - build
       - veracode_scan:
           requires:
             - build
