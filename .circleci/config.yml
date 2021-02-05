@@ -60,7 +60,8 @@ jobs:
   abs_scan:
     docker:
       # specify the version you desire here
-      - image: signiant/docker-jenkins-centos7-java8:latest
+      #- image: signiant/docker-jenkins-centos7-java8:latest
+      - image: maven:3.6.3-openjdk-8
 
     #working_directory: ~/repo
 
@@ -69,9 +70,9 @@ jobs:
       - attach_workspace:
           at: ./
       # Install Maven
-      - run:
-          name: Install Maven
-          command: 'yum -y install maven'      
+      #- run:
+      #    name: Install Maven
+      #    command: 'yum -y install maven'      
 
       # download and run SourceClear scanner
       - run:
