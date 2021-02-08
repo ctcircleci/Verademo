@@ -1,4 +1,4 @@
-# Use the latest 2.1 version of CircleCI pipeline processing engine, see https://circleci.com/docs/2.0/configuration-reference/
+# ExampleCircleCI pipeline that builds and scans a project using Veracodes Agent Based Scanner, Policy and Pipeline Scans.
 version: 2.1
 
 jobs:
